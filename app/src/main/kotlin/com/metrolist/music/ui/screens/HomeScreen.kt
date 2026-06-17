@@ -136,6 +136,7 @@ import com.metrolist.music.playback.queues.YouTubeQueue
 import com.metrolist.music.ui.component.AlbumGridItem
 import com.metrolist.music.ui.component.ArtistGridItem
 import com.metrolist.music.ui.component.ChipsRow
+import com.metrolist.music.ui.component.ListeningTimePill
 import com.metrolist.music.ui.component.HideOnScrollFAB
 import com.metrolist.music.ui.component.LocalBottomSheetPageState
 import com.metrolist.music.ui.component.LocalMenuState
@@ -165,6 +166,7 @@ import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 import com.metrolist.music.viewmodels.CommunityPlaylistItem
 import com.metrolist.music.viewmodels.HomeViewModel
+import com.metrolist.music.viewmodels.TimeStatsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -642,6 +644,8 @@ fun HomeScreen(
 
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsStateWithLifecycle()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
+    val timeStatsViewModel: TimeStatsViewModel = hiltViewModel()
+    val todayPlayTimeMs by timeStatsViewModel.todayPlayTimeMs.collectAsStateWithLifecycle(initialValue = 0L)
 
     val quickPicks by viewModel.quickPicks.collectAsStateWithLifecycle()
     val forgottenFavorites by viewModel.forgottenFavorites.collectAsStateWithLifecycle()
@@ -1179,6 +1183,14 @@ fun HomeScreen(
                         onValueUpdate = {
                             viewModel.toggleChip(it)
                         },
+                    )
+                }
+
+                item(key = "listening_time") {
+                    ListeningTimePill(
+                        todayPlayTimeMs = todayPlayTimeMs,
+                        onClick = { navController.navigate("time_stats") },
+                        modifier = Modifier.padding(horizontal = 16.dp),
                     )
                 }
 
