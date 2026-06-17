@@ -93,6 +93,7 @@ import com.metrolist.music.ui.component.ArtistListItem
 import com.metrolist.music.ui.component.CreatePlaylistDialog
 import com.metrolist.music.ui.component.LibrarySearchEmptyPlaceholder
 import com.metrolist.music.ui.component.LibrarySearchHeader
+import com.metrolist.music.ui.component.ListeningTimePill
 import com.metrolist.music.ui.component.LocalMenuState
 import com.metrolist.music.ui.component.PlaylistGridItem
 import com.metrolist.music.ui.component.PlaylistListItem
@@ -106,6 +107,7 @@ import com.metrolist.music.ui.menu.SongMenu
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 import com.metrolist.music.viewmodels.LibraryMixViewModel
+import com.metrolist.music.viewmodels.TimeStatsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.Collator
@@ -118,12 +120,14 @@ fun LibraryMixScreen(
     navController: NavController,
     filterContent: @Composable () -> Unit,
     viewModel: LibraryMixViewModel = hiltViewModel(),
+    timeStatsViewModel: TimeStatsViewModel = hiltViewModel(),
 ) {
     val menuState = LocalMenuState.current
     val haptic = LocalHapticFeedback.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val queueSearchedSongsStr = stringResource(R.string.queue_searched_songs)
     val playerConnection = LocalPlayerConnection.current ?: return
+    val todayPlayTimeMs by timeStatsViewModel.todayPlayTimeMs.collectAsStateWithLifecycle(initialValue = 0L)
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsStateWithLifecycle()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
 
@@ -472,6 +476,17 @@ fun LibraryMixScreen(
                         contentType = CONTENT_TYPE_HEADER,
                     ) {
                         headerContent()
+                    }
+
+                    item(
+                        key = "listening_time",
+                        contentType = CONTENT_TYPE_HEADER,
+                    ) {
+                        ListeningTimePill(
+                            todayPlayTimeMs = todayPlayTimeMs,
+                            onClick = { navController.navigate("time_stats") },
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                        )
                     }
 
                     if (showLikedPlaylist) {

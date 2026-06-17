@@ -28,6 +28,7 @@ import com.metrolist.music.constants.PlaylistSortType
 import com.metrolist.music.constants.SongSortType
 import com.metrolist.music.db.entities.Album
 import com.metrolist.music.db.entities.AlbumArtistMap
+import com.metrolist.music.db.entities.DayPlayTime
 import com.metrolist.music.db.entities.AlbumEntity
 import com.metrolist.music.db.entities.AlbumWithSongs
 import com.metrolist.music.db.entities.Artist
@@ -546,6 +547,9 @@ interface DatabaseDao {
 
     @Query("SELECT SUM(playTime) FROM event WHERE timestamp >= :fromTimeStamp AND timestamp <= :toTimeStamp")
     fun getTotalPlayTimeInRange(fromTimeStamp: LocalDateTime, toTimeStamp: LocalDateTime): Flow<Long?>
+
+    @Query("SELECT date(timestamp/1000, 'unixepoch') AS day, SUM(playTime) AS playTime FROM event WHERE timestamp >= :fromTimeStamp AND timestamp <= :toTimeStamp GROUP BY day ORDER BY day")
+    fun getPlayTimeByDay(fromTimeStamp: LocalDateTime, toTimeStamp: LocalDateTime): Flow<List<DayPlayTime>>
 
     @Query("SELECT SUM(playTime) FROM event WHERE songId = :songId")
     fun getTotalPlayTimeForSong(songId: String): Long?

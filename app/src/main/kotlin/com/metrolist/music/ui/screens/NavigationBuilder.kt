@@ -63,6 +63,7 @@ import com.metrolist.music.ui.screens.settings.integrations.LastFMSettings
 import com.metrolist.music.ui.screens.settings.integrations.ListenTogetherSettings
 
 import com.metrolist.music.ui.screens.wrapped.WrappedScreen
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 
@@ -116,6 +117,13 @@ fun NavGraphBuilder.navigationBuilder(
 
     composable("stats") {
         StatsScreen(navController)
+    }
+
+    composable("time_stats") {
+        TimeStatsScreen(
+            viewModel = hiltViewModel(),
+            onBack = { navController.navigateUp() },
+        )
     }
 
     composable("mood_and_genres") {
