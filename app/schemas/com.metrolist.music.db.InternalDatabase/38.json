@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 38,
-    "identityHash": "bcf76ed36a3cb785f239e5cfbd28440e",
+    "identityHash": "aa416cb9f6f64953489d9f6eeebdca27",
     "entities": [
       {
         "tableName": "song",
@@ -941,6 +941,15 @@
         },
         "indices": [
           {
+            "name": "index_event_timestamp",
+            "unique": false,
+            "columnNames": [
+              "timestamp"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_event_timestamp` ON `${TABLE_NAME}` (`timestamp`)"
+          },
+          {
             "name": "index_event_songId",
             "unique": false,
             "columnNames": [
@@ -1362,7 +1371,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bcf76ed36a3cb785f239e5cfbd28440e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'aa416cb9f6f64953489d9f6eeebdca27')"
     ]
   }
 }

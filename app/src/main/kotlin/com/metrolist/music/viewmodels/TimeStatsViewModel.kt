@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -33,18 +34,18 @@ constructor(
         val now = LocalDateTime.now()
         val startOfDay = now.toLocalDate().atStartOfDay()
         database.getTotalPlayTimeInRange(startOfDay, now)
-    }.map { it ?: 0L }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0L)
+    }.map { it ?: 0L }.distinctUntilChanged().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0L)
 
     val thisWeekPlayTimes: Flow<List<DayPlayTime>> = refreshTrigger.flatMapLatest {
         val now = LocalDateTime.now()
         val monday = now.toLocalDate().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).atStartOfDay()
         database.getPlayTimeByDay(monday, now)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    }.distinctUntilChanged().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val lastWeekPlayTimes: Flow<List<DayPlayTime>> = refreshTrigger.flatMapLatest {
         val today = LocalDate.now()
         val lastMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusDays(7)
         val lastSunday = lastMonday.plusDays(6).atTime(LocalTime.MAX)
         database.getPlayTimeByDay(lastMonday.atStartOfDay(), lastSunday)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    }.distinctUntilChanged().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 }
