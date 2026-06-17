@@ -575,8 +575,8 @@ fun ContentSettings(
                     Slider(
                         value = tempLength,
                         onValueChange = { tempLength = it },
-                        valueRange = 1f..100f,
-                        steps = 98
+                        valueRange = 1f..1000f,
+                        steps = 998
                     )
                 }
             },
